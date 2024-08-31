@@ -35,12 +35,19 @@ return [
     |
     */
 
-    'guards' => [
+   'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------
@@ -64,12 +71,14 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+    ],
+
 
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
-    ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -107,7 +116,13 @@ return [
     | Here you may define the amount of seconds before a password confirmation
     | times out and the user is prompted to re-enter their password via the
     | confirmation screen. By default, the timeout lasts for three hours.
-    |
+    |'guards' => [
+    'api' => [
+        'driver' => 'passport',
+        'provider' => 'users',
+    ],
+],
+
     */
 
     'password_timeout' => 10800,

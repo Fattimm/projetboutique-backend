@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,10 +8,13 @@ class Article extends Model
 {
     use HasFactory;
 
-    /**
-     * Les attributs qui sont assignables en masse.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = ['libelle', 'prix', 'qteStock'];
+    protected $fillable = [
+        'libelle',
+        'prix',
+        'qteStock',
+    ];
+    protected $hidden = [
+        'created_at' , 
+        'updated_at',
+    ];
 }

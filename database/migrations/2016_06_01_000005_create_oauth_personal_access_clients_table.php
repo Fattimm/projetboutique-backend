@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('libelle');
-            $table->decimal('prix', 10, 2);
-            $table->unsignedInteger('qteStock');
+        Schema::create('oauth_personal_access_clients', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('client_id');
+            $table->timestamps();
         });
     }
 
@@ -23,10 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->dropColumn(['libelle', 'prix', 'qteStock']);
-
-        });
+        Schema::dropIfExists('oauth_personal_access_clients');
     }
-
 };
