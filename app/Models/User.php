@@ -23,7 +23,7 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'login',
-        'role',
+        'role_id',
         'password',
     ];
     /**
@@ -48,4 +48,10 @@ class User extends Authenticatable
     function client() {
         return $this->hasOne(Client::class,'user_id');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
 }
