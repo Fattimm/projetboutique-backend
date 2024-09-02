@@ -29,35 +29,6 @@ class StoreClientRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-//     public function rules(): array
-//     {
-//         $rules = [
-//             'surname' => ['required', 'string', 'max:255','unique:clients,surname'],
-//             'address' => ['string', 'max:255'],
-//             'telephone' => ['required',new TelephoneRule()],
-
-//             'user' => ['sometimes','array'],
-//             'user.nom' => ['required_with:user','string'],
-//             'user.prenom' => ['required_with:user','string'],
-//             'user.login' => ['required_with:user','string'],
-//             'user.role' => ['required_with:user', 'in:' . implode(',', array_column(RoleEnum::cases(), 'value'))],
-//             'user.password' => ['required_with:user', new CustumPasswordRule(),'confirmed'],
-
-//         ];
-// /*
-//         if ($this->filled('user')) {
-//             $userRules = (new StoreUserRequest())->Rules();
-//             $rules = array_merge($rules, ['user' => 'array']);
-//             $rules = array_merge($rules, array_combine(
-//                 array_map(fn($key) => "user.$key", array_keys($userRules)),
-//                 $userRules
-//             ));
-//         }
-// */
-//       //  dd($rules);
-
-//         return $rules;
-//     }
 
     public function rules(): array
     {
@@ -93,3 +64,4 @@ class StoreClientRequest extends FormRequest
 
 
 }
+

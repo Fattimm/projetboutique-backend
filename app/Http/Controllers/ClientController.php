@@ -15,6 +15,7 @@ use \Exception;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Models\Role;
 
+
 class ClientController extends Controller
 {
     use RestResponseTrait;
@@ -84,10 +85,7 @@ class ClientController extends Controller
         public function filterByAccount(Request $request)
         {
             $comptes = $request->query('comptes');
-            dd($comptes); // Vérifiez ce qui est reçu dans $comptes
-
-
-
+            
             if ($comptes === 'oui') {
                 // Clients ayant un user_id non nul (ont un compte utilisateur)
                 $clients = Client::whereNotNull('user_id')->get();

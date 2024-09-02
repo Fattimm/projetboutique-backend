@@ -61,24 +61,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 // });
 
+
 // Grouper les routes sous le préfixe 'v1'
 Route::prefix('v1')->group(function () {
-    // Routes pour les clients
-    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
-    
     // Routes de filtrage des clients
     Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
     Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
     Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
-    Route::get('/clients/{id}', [ClientController::class, 'show']);
     Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
     Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
-
-
+    
+    // Routes pour les clients
+    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+    
     // Routes pour les users
     Route::apiResource('/users', UserController::class)->only(['index', 'store']);
-    Route::delete('/users/{id}', [ClientController::class, 'deleteAccount']);
-
+    Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
     
     // Routes d'authentification
     Route::post('/login', [AuthController::class, 'login']);
@@ -92,9 +90,6 @@ Route::prefix('v1')->group(function () {
     Route::get('/articles/{id}', [ArticleController::class, 'showById']);
     Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 });
-
-
-
 
 
 
@@ -144,25 +139,25 @@ Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () 
         'as' => 'tokens.destroy',
     ]);
 
-    Route::get('/clients', [
-        'uses' => [ClientController::class, 'forUser'],
-        'as' => 'clients.index',
-    ]);
+    // Route::get('/clients', [
+    //     'uses' => [ClientController::class, 'forUser'],
+    //     'as' => 'clients.index',
+    // ]);
 
-    Route::post('/clients', [
-        'uses' => [ClientController::class, 'store'],
-        'as' => 'clients.store',
-    ]);
+    // Route::post('/clients', [
+    //     'uses' => [ClientController::class, 'store'],
+    //     'as' => 'clients.store',
+    // ]);
 
-    Route::put('/clients/{client_id}', [
-        'uses' => [ClientController::class, 'update'],
-        'as' => 'clients.update',
-    ]);
+    // Route::put('/clients/{client_id}', [
+    //     'uses' => [ClientController::class, 'update'],
+    //     'as' => 'clients.update',
+    // ]);
 
-    Route::delete('/clients/{client_id}', [
-        'uses' => [ClientController::class, 'destroy'],
-        'as' => 'clients.destroy',
-    ]);
+    // Route::delete('/clients/{client_id}', [
+    //     'uses' => [ClientController::class, 'destroy'],
+    //     'as' => 'clients.destroy',
+    // ]);
 
     Route::get('/scopes', [
         'uses' => [ScopeController::class, 'all'],

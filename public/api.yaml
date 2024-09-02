@@ -1,0 +1,1083 @@
+openapi: 3.0.0
+info:
+  title: API de Gestion des Utilisateurs
+  description: API pour gérer les utilisateurs dans l'application
+  version: 1.0.0
+servers:
+  - url: http://localhost/api/v1
+paths:
+  paths:
+  /login:
+    post:
+      summary: "Login utilisateur"
+      description: "Authentifier un utilisateur avec un login et un mot de passe."
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                  example: "utilisateur"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        '200':
+          description: "Succès de l'authentification"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  token:
+                    type: string
+                    example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      login:
+                        type: string
+                        example: "utilisateur"
+        '401':
+          description: "Échec de l'authentification"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "Unauthorized"
+
+  /register:
+    post:
+      summary: "Enregistrer un utilisateur"
+      description: "Enregistrer un nouvel utilisateur et l'associer à un client."
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientid:
+                  type: integer
+                  example: 1
+                login:
+                  type: string
+                  example: "nouveau_utilisateur"
+                password:
+                  type: string
+                  example: "password123"
+                role:
+                  type: string
+                  example: "CLIENT"
+      responses:
+        '200':
+          description: "Utilisateur enregistré avec succès"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      client:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          surname:
+                            type: string
+                            example: "Dupont"
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          login:
+                            type: string
+                            example: "nouveau_utilisateur"
+                      token:
+                        type: string
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+        '400':
+          description: "Échec de l'enregistrement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  data:
+                    type: object
+                    properties:
+                      clientid:
+                        type: array
+                        items:
+                          type: string
+                          example: "Client does not exist"
+  /users:
+    post:
+      summary: Crée un nouvel utilisateur
+      operationId: createUser
+      tags:
+        - Utilisateurs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nom:
+                  type: string
+                prenom:
+                  type: string
+                login:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+              required:
+                - nom
+                - prenom
+                - login
+                - password
+                - role
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      nom:
+                        type: string
+                      prenom:
+                        type: string
+                      login:
+                        type: string
+                      role:
+                        type: string
+                  message:
+                    type: string
+        '500':
+          description: Erreur lors de la création de l'utilisateur
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+    get:
+      summary: Affiche la liste des utilisateurs
+      operationId: listUsers
+      tags:
+        - Utilisateurs
+      parameters:
+        - name: role
+          in: query
+          description: Filtrer par rôle d'utilisateur
+          required: false
+          schema:
+            type: string
+        - name: active
+          in: query
+          description: Filtrer par état actif (oui/non)
+          required: false
+          schema:
+            type: string
+            enum:
+              - oui
+              - non
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        nom:
+                          type: string
+                        prenom:
+                          type: string
+                        login:
+                          type: string
+                        role:
+                          type: string
+                        deletedAt:
+                          type: string
+                          format: date-time
+                  message:
+                    type: string
+        '400':
+          description: Paramètre "active" invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+  /clients:
+    post:
+      summary: Crée un nouveau client
+      operationId: createClient
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                surname:
+                  type: string
+                address:
+                  type: string
+                telephone:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    nom:
+                      type: string
+                    prenom:
+                      type: string
+                    login:
+                      type: string
+                    password:
+                      type: string
+                    role:
+                      type: string
+                  required:
+                    - nom
+                    - prenom
+                    - login
+                    - password
+                    - role
+              required:
+                - surname
+                - address
+                - telephone
+      responses:
+        '201':
+          description: Client créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      surname:
+                        type: string
+                      address:
+                        type: string
+                      telephone:
+                        type: string
+                  message:
+                    type: string
+        '500':
+          description: Erreur lors de la création du client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+    get:
+      summary: Liste tous les clients
+      operationId: listClients
+      tags:
+        - Clients
+      responses:
+        '200':
+          description: Liste des clients récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        surname:
+                          type: string
+                        address:
+                          type: string
+                        telephone:
+                          type: string
+                  message:
+                    type: string
+  /clients/filter:
+    get:
+      summary: Filtrer les clients par comptes
+      operationId: filterClientsByAccount
+      tags:
+        - Clients
+      parameters:
+        - name: comptes
+          in: query
+          description: Filtrer par existence de compte utilisateur (oui/non)
+          required: true
+          schema:
+            type: string
+            enum:
+              - oui
+              - non
+      responses:
+        '200':
+          description: Liste des clients filtrés par comptes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        surname:
+                          type: string
+                        address:
+                          type: string
+                        telephone:
+                          type: string
+                  message:
+                    type: string
+        '400':
+          description: Paramètre "comptes" invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+  /clients/status:
+    get:
+      summary: Filtrer les clients par statut actif
+      operationId: filterClientsByStatus
+      tags:
+        - Clients
+      parameters:
+        - name: active
+          in: query
+          description: Filtrer par statut actif des comptes utilisateurs (oui/non)
+          required: true
+          schema:
+            type: string
+            enum:
+              - oui
+              - non
+      responses:
+        '200':
+          description: Liste des clients filtrés par statut actif récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        surname:
+                          type: string
+                        address:
+                          type: string
+                        telephone:
+                          type: string
+                  message:
+                    type: string
+        '400':
+          description: Paramètre "active" invalide
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+  /clients/telephone:
+    post:
+      summary: Rechercher un client par téléphone
+      operationId: searchClientByTelephone
+      tags:
+        - Clients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                telephone:
+                  type: string
+              required:
+                - telephone
+      responses:
+        '200':
+          description: Client trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      surname:
+                        type: string
+                      address:
+                        type: string
+                      telephone:
+                        type: string
+                  message:
+                    type: string
+        '404':
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+  /clients/{id}:
+    get:
+      summary: Affiche les informations d'un client
+      operationId: getClientById
+      tags:
+        - Clients
+      parameters:
+        - name: id
+          in: path
+          description: ID du client à récupérer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Client trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      surname:
+                        type: string
+                      address:
+                        type: string
+                      telephone:
+                        type: string
+                  message:
+                    type: string
+        '411':
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+    post:
+      summary: Lister les dettes d'un client
+      operationId: getClientDettes
+      tags:
+        - Clients
+      parameters:
+        - name: id
+          in: path
+          description: ID du client pour lequel lister les dettes
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dettes du client récupérées avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        amount:
+                          type: number
+                          format: float
+                        dueDate:
+                          type: string
+                          format: date-time
+                  message:
+                    type: string
+        '411':
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+  /clients/{id}/user:
+    post:
+      summary: Afficher les informations du client avec les informations utilisateur
+      operationId: getClientWithUser
+      tags:
+        - Clients
+      parameters:
+        - name: id
+          in: path
+          description: ID du client à récupérer avec les informations utilisateur
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Client et utilisateur trouvés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      client:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          surname:
+                            type: string
+                          address:
+                            type: string
+                          telephone:
+                            type: string
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          nom:
+                            type: string
+                          prenom:
+                            type: string
+                          login:
+                            type: string
+                          role:
+                            type: string
+                  message:
+                    type: string
+        '411':
+          description: Client non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                  message:
+                    type: string
+
+  /users/{userId}/delete:
+    post:
+      summary: Marquer un compte utilisateur comme supprimé
+      operationId: deleteUserAccount
+      tags:
+        - Utilisateurs
+      parameters:
+        - name: userId
+          in: path
+          description: ID de l'utilisateur à marquer comme supprimé
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Compte utilisateur marqué comme supprimé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+  /articles:
+    post:
+      summary: Crée un nouvel article
+      operationId: createArticle
+      tags:
+        - Articles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                libelle:
+                  type: string
+                prix:
+                  type: number
+                  format: float
+                qteStock:
+                  type: integer
+              required:
+                - libelle
+                - prix
+                - qteStock
+      responses:
+        '201':
+          description: Article créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      libelle:
+                        type: string
+                      prix:
+                        type: number
+                        format: float
+                      qteStock:
+                        type: integer
+        '411':
+          description: Erreur de validation lors de la création de l'article
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+
+    get:
+      summary: Liste tous les articles ou filtre par disponibilité
+      operationId: listArticles
+      tags:
+        - Articles
+      parameters:
+        - name: disponible
+          in: query
+          description: Filtrer les articles par disponibilité (oui/non)
+          schema:
+            type: string
+            enum:
+              - oui
+              - non
+      responses:
+        '200':
+          description: Liste des articles récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        libelle:
+                          type: string
+                        prix:
+                          type: number
+                          format: float
+                        qteStock:
+                          type: integer
+        '404':
+          description: Aucune donnée trouvée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+
+  /articles/{id}/stock:
+    post:
+      summary: Met à jour la quantité de stock d'un article
+      operationId: updateArticleStock
+      tags:
+        - Articles
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'article à mettre à jour
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qteStock:
+                  type: integer
+              required:
+                - qteStock
+      responses:
+        '200':
+          description: Quantité de stock mise à jour avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      libelle:
+                        type: string
+                      prix:
+                        type: number
+                        format: float
+                      qteStock:
+                        type: integer
+        '411':
+          description: Article non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+
+  /articles/update-multiple:
+    post:
+      summary: Met à jour la quantité de stock de plusieurs articles
+      operationId: updateMultipleArticleStocks
+      tags:
+        - Articles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                articles:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      qteStock:
+                        type: integer
+              required:
+                - articles
+      responses:
+        '200':
+          description: Mise à jour des stocks terminée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: array
+                        items:
+                          type: object
+                      error:
+                        type: array
+                        items:
+                          type: integer
+        '411':
+          description: Erreurs de validation lors de la mise à jour des stocks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+
+  /articles/{id}:
+    get:
+      summary: Récupère les détails d'un article par ID
+      operationId: getArticleById
+      tags:
+        - Articles
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'article à récupérer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Article trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      libelle:
+                        type: string
+                      prix:
+                        type: number
+                        format: float
+                      qteStock:
+                        type: integer
+        '411':
+          description: Article non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+
+  /articles/show-by-libelle:
+    post:
+      summary: Récupère les détails d'un article par son libellé
+      operationId: getArticleByLibelle
+      tags:
+        - Articles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                libelle:
+                  type: string
+              required:
+                - libelle
+      responses:
+        '200':
+          description: Article trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      libelle:
+                        type: string
+                      prix:
+                        type: number
+                        format: float
+                      qteStock:
+                        type: integer
+        '411':
+          description: Article non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  message:
+                    type: string
