@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Controllers\TransientTokenController;
@@ -29,32 +30,68 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware('auth:api')->group(function () {
-    // Route::post('/articles', [ArticleController::class, 'store']);
-    // Route::get('articles', [ArticleController::class, 'index']);
-    // Route::patch('articles/{id}', [ArticleController::class, 'updateStock']);
-    // Route::post('articles/stock', [ArticleController::class, 'updateMultipleStocks']);
-    // Afficher les détails d'un article par ID
-    // Route::get('articles/{id}', [ArticleController::class, 'showById']);
-    // Afficher les détails d'un article par libellé
-    // Route::post('articles/libelle', [ArticleController::class, 'showByLibelle']);
+// Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function () {
+//    // Routes pour les clients
+//    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+    
+//    // Routes de filtrage des clients
+//    Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
+//    Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
+//    Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+//    Route::get('/clients/{id}', [ClientController::class, 'show']);
+//    Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+//    Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+
+
+//    // Routes pour les users
+//    Route::apiResource('/users', UserController::class)->only(['index', 'store']);
+//    Route::delete('/users/{id}', [ClientController::class, 'deleteAccount']);
+
+   
+//    // Routes d'authentification
+//    Route::post('/login', [AuthController::class, 'login']);
+//    Route::post('/register', [AuthController::class, 'register']);
+   
+//    // Routes pour les articles
+//    Route::post('/articles', [ArticleController::class, 'store']);
+//    Route::get('/articles', [ArticleController::class, 'index']);
+//    Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
+//    Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+//    Route::get('/articles/{id}', [ArticleController::class, 'showById']);
+//    Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 // });
 
+// Grouper les routes sous le préfixe 'v1'
 Route::prefix('v1')->group(function () {
-    Route::apiResource('/clients', ClientController::class)->only(['index', 'store','show']);
+    // Routes pour les clients
+    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+    
+    // Routes de filtrage des clients
+    Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
+    Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
+    Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+    Route::get('/clients/{id}', [ClientController::class, 'show']);
+    Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+    Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+
+
+    // Routes pour les users
+    Route::apiResource('/users', UserController::class)->only(['index', 'store']);
+    Route::delete('/users/{id}', [ClientController::class, 'deleteAccount']);
+
+    
+    // Routes d'authentification
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Routes pour les articles
     Route::post('/articles', [ArticleController::class, 'store']);
     Route::get('/articles', [ArticleController::class, 'index']);
     Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
     Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
-    // Afficher les détails d'un article par ID
     Route::get('/articles/{id}', [ArticleController::class, 'showById']);
-    // Afficher les détails d'un article par libellé
     Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
-
 });
-
 
 
 

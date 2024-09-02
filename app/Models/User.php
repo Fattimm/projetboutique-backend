@@ -23,7 +23,7 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'login',
-        'role_id',
+        'role',
         'password',
     ];
     /**
@@ -35,6 +35,7 @@ class User extends Authenticatable
       //  'password',
      'created_at',
      'updated_at',
+     'deletedAt',
     ];
     /**
      * The attributes that should be cast.
