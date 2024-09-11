@@ -14,15 +14,13 @@ class StoreDetteRequest extends FormRequest
     public function rules()
     {
         return [
-            'montant' => 'required|numeric|min:0',
             'clientId' => 'required|exists:clients,id',
-            'articles' => 'required|array|min:1',
+            'montant' => 'required|numeric|min:0',
+            'articles' => 'required|array',
             'articles.*.articleId' => 'required|exists:articles,id',
-            'articles.*.qteVente' => 'required|integer|min:1',
+            'articles.*.qteVente' => 'required|numeric|min:0',
             'articles.*.prixVente' => 'required|numeric|min:0',
-            'paiement.montant' => 'required|numeric|min:0',
-
-
+            'paiement.montant' => 'nullable|numeric|min:0',
         ];
     }
 

@@ -27,10 +27,8 @@ class QrCodeService
             ->writer(new PngWriter()) // Définir le format de sortie comme PNG
             ->data($jsonData) // Les données à encoder
             ->encoding(new Encoding('UTF-8')) // L'encodage du texte
-            // ->errorCorrectionLevel(new ErrorCorrectionLevelLow()) // Niveau de correction d'erreurs
             ->size(200) // Taille du QR code
             ->margin(10) // Marge autour du QR code
-            // ->roundBlockSizeMode(new RoundBlockSizeModeMargin()) // Mode de taille des blocs
             ->build(); // Construire le QR code
 
         // Obtenir l'image en base64

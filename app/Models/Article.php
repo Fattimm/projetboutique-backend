@@ -26,7 +26,7 @@ class Article extends Model
     
     public function scopeFilterByLibelle($query, $libelle)
     {
-        return $query->where('libelle', 'like', "%$libelle%");
+        return $query->where('libelle', 'like', "%{$libelle}%");
     }
 
     public function dettes()

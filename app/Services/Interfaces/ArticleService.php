@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 
 interface ArticleService

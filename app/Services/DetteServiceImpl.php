@@ -57,7 +57,8 @@ class DetteServiceImpl implements DetteService
                 }
 
                 $dette->paiements()->create([
-                    'montant' => $request->paiements['montant'],
+                    'montant' => $request->paiement['montant'],
+                    'date' => now(),
                 ]);
             }
 
@@ -79,6 +80,7 @@ class DetteServiceImpl implements DetteService
             ];
         }
     }
+
 
     public function index($statut = null)
     {
@@ -246,7 +248,6 @@ class DetteServiceImpl implements DetteService
             return [
                 'status' => 200,
                 'data' => [
-                    'dette' => $dette,
                     'paiements' => $dette->paiements,
                 ],
                 'message' => 'Paiement ajouté avec succès',
@@ -260,6 +261,7 @@ class DetteServiceImpl implements DetteService
             ];
         }
     }
+
 
 
 }

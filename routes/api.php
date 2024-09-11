@@ -65,7 +65,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/dettes', [DetteController::class, 'index']);
         Route::get('/dettes/{id}', [DetteController::class, 'show']);
         Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
-        Route::post('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
+        Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
         Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
 
 

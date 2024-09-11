@@ -80,6 +80,15 @@ class ClientServiceImpl implements ClientService
             $client->save();
         }
 
+         // Générer le QR code
+         $qrCodePath = $this->generateQrCode($client, $user);
+
+         // Créer la carte de fidélité
+         $loyaltyCardPath = $this->loyaltyCardService->createLoyaltyCard($client, $qrCodePath, $user, $photoLocalPath);
+ 
+         // Envoyer l'e-mail avec la carte de fidélité
+         $this->sendLoyaltyCardEmail($client, $user, $loyaltyCardPath);
+ 
         
 
         DB::commit();
@@ -146,6 +155,7 @@ public function generateQrCode(Client $client, User $user)
 
         Mail::to($email)->send(new LoyaltyCardMail($client, $loyaltyCardPath));
     }
+
 
     public function index()
     {

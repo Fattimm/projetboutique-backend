@@ -25,6 +25,7 @@ class ArticleController extends Controller
 
     public function store(StoreArticleRequest $request)
     {
+        // Passer les données validées sous forme de tableau
         return $this->articleService->create($request->validated());
     }
 

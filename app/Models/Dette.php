@@ -18,9 +18,7 @@ class Dette extends Model
 
     public function articles()
     {
-        return $this->belongsToMany(Article::class, 'detail_dette')
-                    ->withPivot('qteVente', 'prixVente')
-                    ->withTimestamps();
+        return $this->belongsToMany(Article::class, 'detail_dette')->withPivot('qteVente', 'prixVente');
     }
 
 
@@ -28,5 +26,5 @@ class Dette extends Model
     {
         return $this->hasMany(Paiement::class);
     }
-
+  
 }

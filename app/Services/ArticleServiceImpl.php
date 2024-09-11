@@ -39,10 +39,16 @@ class ArticleServiceImpl implements ArticleService
     }
 
     
-    public function create(array $data)
+    // public function create(array $data)
+    // {
+    //     return $this->repo->create($data);
+    // }
+    public function create(array $data) // Accepter un tableau ici
     {
+        // Vous pouvez ajouter des validations ou des transformations ici si nécessaire
         return $this->repo->create($data);
     }
+
 
     public function updateStock(array $data, $id)
     {
@@ -114,7 +120,7 @@ class ArticleServiceImpl implements ArticleService
         $libelle = $data['libelle'] ?? '';
 
         // Rechercher les articles par libellé
-        $articles = Article::filterByLibelle($libelle)->get();
+        $articles = $this->repo->findByLibelle($libelle)->get();
 
         return [
             'data' => $articles,
@@ -122,6 +128,7 @@ class ArticleServiceImpl implements ArticleService
             'status_code' => $articles->isNotEmpty() ? 200 : 404
         ];
     }
+
 
 
 }
