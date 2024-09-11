@@ -10,10 +10,13 @@ use Illuminate\Notifications\Notifiable;
 // use Laravel\Sanctum\HasApiTokens;
 use Laravel\Passport\HasApiTokens;
 use App\Models\Client;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, SoftDeletes, Notifiable;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,8 +26,10 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'login',
-        'role',
+        'email',
         'password',
+        'role',
+        'photo',
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -46,6 +51,10 @@ class User extends Authenticatable
     //    'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+    protected $dates = ['deletedAt'];
+
+
     function client() {
         return $this->hasOne(Client::class,'user_id');
     }
@@ -53,6 +62,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function hasRole($roleName)
+    {
+        return $this->role->contains('name', $roleName);
     }
 
 }

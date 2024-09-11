@@ -4,7 +4,7 @@ info:
   description: API pour gérer les utilisateurs dans l'application
   version: 1.0.0
 servers:
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:4000/api/v1
 paths:
   /login:
     post:

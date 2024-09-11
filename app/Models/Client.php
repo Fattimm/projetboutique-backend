@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Client extends Model
@@ -29,5 +30,19 @@ class Client extends Model
     public function dettes()
     {
         return $this->hasMany(Dette::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('filterByTelephone', function (Builder $builder) {
+            if (request()->has('telephone')) {
+                $builder->where('telephone', 'like', '%' . request()->input('telephone') . '%');
+            }
+        });
     }
 }

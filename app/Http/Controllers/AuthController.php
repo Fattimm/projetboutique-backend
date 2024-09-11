@@ -2,68 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\UploadFacade;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Services\AuthentificationPassport;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Client;
+use App\Services\Upload;
 use App\Http\Requests\StoreUserRequest;
-use App\Rules\TelephoneRule;
-use App\Rules\CustumPasswordRule;
+use App\Http\Requests\AuthRequest;
+use Cloudinary\Api\Upload\UploadApi;
+use Cloudinary\Cloudinary;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    protected $authService;
+    
+    public function __construct(AuthentificationPassport $authService)
     {
-        $request->validate([
-            'login' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-        $user = User::where('login', $request->input('login'))->first();
-
-        if (!$user || !Hash::check($request->input('password'), $user->password)) {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
-        }
-
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->accessToken;
-
-        return response()->json([
-            'status' => 'success',
-            'token' => $token,
-            'user' => $user
-        ]);
+        $this->authService = $authService;
     }
 
-    public function register(StoreUserRequest $request)
+    public function login(AuthRequest $request)
     {
-        $client = Client::find($request->input('clientid'));
-
-        if (!$client) {
-            return response()->json(['status' => 'error', 'data' => ['clientid' => ['Client does not exist']]], 400);
-        }
-
-        $user = User::create([
-            'login' => $request->input('login'),
-            'nom' => $request->input('nom'),
-            'prenom' => $request->input('prenom'),
-            'password' => Hash::make($request->input('password')),
-            'role' => $request->input('role'),
-        ]);
-
-        $client->user()->associate($user)->save();
-
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->accessToken;
-
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'client' => $client,
-                'user' => $user,
-                'token' => $token
-            ]
-        ]);
+        $credentials = $request->only('login', 'password');
+        return $this->authService->login($request);
     }
+
+    public function logout() {
+        return $this->authService->logout();
+    }
+
+    // public function register(StoreUserRequest $request) {
+    //     return $this->authService->register($request);   
+    // }
+
+
 }

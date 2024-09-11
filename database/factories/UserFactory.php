@@ -27,8 +27,10 @@ class UserFactory extends Factory
             'nom' => fake()->name(),
             'prenom' => fake()->name(),
             'login' => fake()->username(),
+            'email' => $this->faker->unique()->safeEmail,
             'role' => 'BOUTIQUIER',
             'password' => static::$password ??= Hash::make('password'),
+            'photo' => $this->faker->imageUrl(640, 480, 'people', true),
         ];
     }
 

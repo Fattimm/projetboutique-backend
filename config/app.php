@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use SimpleSoftwareIO\QrCode\QrCodeServiceProvider;
+use App\Providers\QrCodeServiceProvider as ProvidersQrCodeServiceProvider;
+use BaconQrCode\Encoder\QrCode as EncoderQrCode;
+use Endroid\QrCode\QrCode as QrCodeQrCode;
 
 return [
 
@@ -170,6 +175,9 @@ return [
         App\Providers\RouteServiceProvider::class,
         // Autres fournisseurs
         Laravel\Passport\PassportServiceProvider::class,
+        App\Providers\AuthCustomServiceProvider::class,
+        App\Providers\QrCodeServiceProvider::class,
+
     ])->toArray(),
 
     /*
@@ -185,6 +193,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        'Upload' => App\Facades\UploadFacade::class,
+
     ])->toArray(),
 
 ];

@@ -8,17 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Dette extends Model
 {
     use HasFactory;
+  
+  protected $fillable = ['client_id', 'montant'];
 
-    // Définir les attributs modifiables
-    protected $fillable = ['client_id', 'date', 'montant', 'montantDu', 'montantRestant'];
-
-    // Définir les attributs cachés
-    protected $hidden = ['created_at', 'updated_at']; // Masquer les timestamps si nécessaire
-
-    // Définir la relation inverse avec le modèle Client
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function articles()
+    {
+        return $this->belongsToMany(Article::class, 'detail_dette')
+                    ->withPivot('qteVente', 'prixVente')
+                    ->withTimestamps();
+    }
+
+
+    public function paiements()
+    {
+        return $this->hasMany(Paiement::class);
     }
 
 }

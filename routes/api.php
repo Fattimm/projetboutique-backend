@@ -1,63 +1,80 @@
 <?php
 
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Http\Controllers\TransientTokenController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\DetteController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ArticleController;
+use Laravel\Passport\Http\Controllers\ScopeController;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Laravel\Passport\Http\Controllers\AuthorizationController;
-use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
+use Laravel\Passport\Http\Controllers\TransientTokenController;
 use Laravel\Passport\Http\Controllers\DenyAuthorizationController;
-use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
-use Laravel\Passport\Http\Controllers\ScopeController;
 use Laravel\Passport\Http\Controllers\PersonalAccessTokenController;
-use App\Http\Controllers\ArticleController;
+use Laravel\Passport\Http\Controllers\ApproveAuthorizationController;
+use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Grouper les routes sous le préfixe 'v1'
-Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function () {
-    // Routes de filtrage des clients
-    Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
-    Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
-    Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
-    Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
-    Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+
+ Route::post('v1/login', [AuthController::class, 'login']);
+ Route::post('v1/register', [AuthController::class, 'register']);
+
+// Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function () {
+Route::prefix('v1')->group(function () {
     
-    // Routes pour les clients
-    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+    // Route::group(['middleware' => ['role:ADMIN']], function () {
+
+        Route::post('users', [UserController::class, 'store']);
+        Route::get('users', [UserController::class, 'index']);
+
+       
+
+        Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
+                            
+    // });
     
-    // Routes pour les users
-    Route::apiResource('/users', UserController::class)->only(['index', 'store']);
-    Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
-    
-    // Routes d'authentification
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
-    
-    // Routes pour les articles
-    Route::post('/articles', [ArticleController::class, 'store']);
-    Route::get('/articles', [ArticleController::class, 'index']);
-    Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
-    Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
-    Route::get('/articles/{id}', [ArticleController::class, 'showById']);
-    Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
+    // Route::group(['middleware' => ['role:BOUTIQUIER']], function () {
+        
+        Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
+        Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+        Route::post('/articles', [ArticleController::class, 'store']);
+        Route::get('/articles', [ArticleController::class, 'index']);
+        Route::get('/articles/{id}', [ArticleController::class, 'showById']);
+        Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
+
+
+       
+        Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
+        Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
+        Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+        Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+        Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+        Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);  
+          
+    // });
+
+
+        Route::post('/dettes', [DetteController::class, 'store']);
+        Route::get('/dettes', [DetteController::class, 'index']);
+        Route::get('/dettes/{id}', [DetteController::class, 'show']);
+        Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
+        Route::post('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
+        Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
+
+
+
+        Route::get('/logout', [AuthController::class, 'logout']);
+
 });
+
+
 
 
 
