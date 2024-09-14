@@ -39,13 +39,8 @@ class ArticleServiceImpl implements ArticleService
     }
 
     
-    // public function create(array $data)
-    // {
-    //     return $this->repo->create($data);
-    // }
-    public function create(array $data) // Accepter un tableau ici
+    public function create(array $data)
     {
-        // Vous pouvez ajouter des validations ou des transformations ici si nécessaire
         return $this->repo->create($data);
     }
 

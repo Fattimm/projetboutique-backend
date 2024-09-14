@@ -13,17 +13,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\TokenRepository;
 use Laravel\Passport\ClientRepository;
-use App\Services\Interfaces\AuthentificationServiceInterface;
+use App\Http\Requests\StoreUserRequest;
 use App\Http\Middleware\JsonResponseMiddleware;
+use App\Services\Interfaces\AuthentificationServiceInterface;
 
 class AuthentificationPassport implements AuthentificationServiceInterface
 {
-    // protected $cloudinary;
+    protected $cloudinary;
     protected $authentificateService;
 
 
     public function __construct(){
-        // $this->cloudinary = new cloudinaryService();
+        $this->cloudinary = new cloudinaryService();
     }
 
     public function login(AuthRequest $request)
@@ -66,77 +67,76 @@ class AuthentificationPassport implements AuthentificationServiceInterface
         ];
     }
 
-    // public function register(StoreUserRequest $request)
-    // {
-    //     DB::beginTransaction();  // Démarrer la transaction
+    public function register(StoreUserRequest $request)
+    {
+        DB::beginTransaction();  // Démarrer la transaction
 
-    //     try {
-    //         // Validation des données de la requête
-    //         $validatedData = $request->validated();
+        try {
+            // Validation des données de la requête
+            $validatedData = $request->validated();
 
-    //         // Vérifier si le client existe
-    //         $client = Client::find($request->input('clientid'))use Illuminate\Support\Facades\Hash;
+            // Vérifier si le client existe
+            $client = Client::find($request->input('clientid')) ;
 
-    //         if (!$client) {
-    //             throw new Exception('Le client n\'existe pas');
-    //         }
+            if (!$client) {
+                throw new Exception('Le client n\'existe pas');
+            }
 
-    //         // Gestion de l'upload de l'image (hors transaction car externe à la DB)
-    //         $photoUrl = null;
-    //         if ($request->hasFile('photo')) {
-    //             $userPhoto = $request->file('photo');
+            // Gestion de l'upload de l'image (hors transaction car externe à la DB)
+            $photoUrl = null;
+            if ($request->hasFile('photo')) {
+                $userPhoto = $request->file('photo');
 
-    //             // Enregistrer l'image dans Cloudinary
-    //             $uploadResult = $this->cloudinary->getCloudinary()->uploadApi()->upload($userPhoto->getRealPath(), [
-    //                 'folder' => 'photos'
-    //             ]);
-    //            // Enregistrement de la photo dans le stockage local (storage/app/public/photos)
-    //            $photoLocalPath = $userPhoto->storeAs('public/photos', $userPhoto->getClientOriginalName());
+                // Enregistrer l'image dans Cloudinary
+                $uploadResult = $this->cloudinary->getCloudinary()->uploadApi()->upload($userPhoto->getRealPath(), [
+                    'folder' => 'photos'
+                ]);
+               // Enregistrement de la photo dans le stockage local (storage/app/public/photos)
+               $photoLocalPath = $userPhoto->storeAs('public/photos', $userPhoto->getClientOriginalName());
 
 
-    //             // Obtenir l'URL sécurisée de l'image
-    //             $photoUrl = $uploadResult['secure_url'];
-    //         }
+                // Obtenir l'URL sécurisée de l'image
+                $photoUrl = $uploadResult['secure_url'];
+            }
 
-    //         // Créer l'utilisateur (opération transactionnelle)
-    //         $user = User::create([
-    //             'login' => $validatedData['login'],
-    //             'nom' => $validatedData['nom'],
-    //             'prenom' => $validatedData['prenom'],
-    //             'email' => $validatedData['email'],
-    //             'password' => bcrypt($validatedData['password']),
-    //             'role' => $validatedData['CLIENT'],
-    //             'photo' => $photoUrl,  // URL de la photo si disponible
-    //         ]);
+            // Créer l'utilisateur (opération transactionnelle)
+            $user = User::create([
+                'login' => $validatedData['login'],
+                'nom' => $validatedData['nom'],
+                'prenom' => $validatedData['prenom'],
+                'email' => $validatedData['email'],
+                'password' => bcrypt($validatedData['password']),
+                'role' => $validatedData['role'],
+                'photo' => $photoUrl,  // URL de la photo si disponible
+            ]);
 
-    //         // Associer l'utilisateur au client (opération transactionnelle)
-    //         $client->user()->associate($user);
-    //         $client->save();
+            // Associer l'utilisateur au client (opération transactionnelle)
+            $client->user()->associate($user);
+            $client->save();
 
-    //         // Confirmer la transaction
-    //         DB::commit();
+            // Confirmer la transaction
+            DB::commit();
 
-    //         // Répondre avec succès
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'data' => [
-    //                 'client' => $client,
-    //                 'user' => $user,
-    //                 'image_path' => $photoUrl,
-    //             ]
-    //         ], 201);
+            // Répondre avec succès
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'client' => $client,
+                    'user' => $user,
+                    'image_path' => $photoUrl,
+                ]
+            ], 201);
 
-    //     } catch (Exception $e) {
-    //         DB::rollBack();  // Annuler la transaction en cas d'erreur
+        } catch (Exception $e) {
+            DB::rollBack();  // Annuler la transaction en cas d'erreur
 
-    //         // Répondre avec une erreur
-    //         return response()->json([
-    //             'status' => 'error',
-    //             'message' => 'Erreur lors de la création de l\'utilisateur : ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+            // Répondre avec une erreur
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors de la création de l\'utilisateur : ' . $e->getMessage()
+            ], 500);
+        }
+    }
 
-    
 
 }

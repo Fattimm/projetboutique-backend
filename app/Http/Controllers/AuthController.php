@@ -37,9 +37,9 @@ class AuthController extends Controller
         return $this->authService->logout();
     }
 
-    // public function register(StoreUserRequest $request) {
-    //     return $this->authService->register($request);   
-    // }
+     public function register(StoreUserRequest $request) {
+         return $this->authService->register($request);   
+     }
 
 
 }

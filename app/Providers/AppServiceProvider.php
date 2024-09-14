@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('QrCodeService', function ($app) {
             return new UploadService();
         });
-        $this->app->bind(DetteService::class, DetteServiceImpl::class);
+        $this->app->singleton(DetteService::class, DetteServiceImpl::class);
     }
 
 

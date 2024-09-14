@@ -21,8 +21,6 @@ class JsonResponseMiddleware
             $statusCode = $originalContent['status_code'] ?? $this->determineStatusCode($data, $errors, $message);
 
             
-            // $statusCode = $this->determineStatusCode($data, $message);
-
             // Construire une réponse JSON cohérente
             $jsonResponse = [
                 'status' => $statusCode,

@@ -6,6 +6,7 @@ use \Exception;
 use App\Models\User;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use App\Events\ClientCreated;
 use App\Services\LoyaltyCardMail;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
@@ -24,6 +25,9 @@ class ClientServiceImpl implements ClientService
 {
     protected $cloudinary;
     protected $loyaltyCardService;
+    protected $qrCodeService;
+    protected $loyaltyCardEmailService;
+
 
 
     public function __construct()
@@ -31,131 +35,80 @@ class ClientServiceImpl implements ClientService
         $this->cloudinary = new cloudinaryService();
 
         $this->loyaltyCardService = new loyaltyCardService;
+        $this->qrCodeService = new QrCodeService();
+        $this->loyaltyCardEmailService = new LoyaltyCardEmailService;
     }
 
 
     public function store(StoreClientRequest $request)
-{
-    DB::beginTransaction();
+    {
+        DB::beginTransaction();
 
-    try {
-        $clientData = $request->only('surname', 'adresse', 'telephone');
+        try {
+            $clientData = $request->only('surname', 'adresse', 'telephone');
 
-        // Assurez-vous que tous les champs requis sont présents
-        if (!isset($clientData['surname']) || !isset($clientData['adresse']) || !isset($clientData['telephone'])) {
-            throw new \Exception("Tous les champs requis pour le client doivent être remplis.");
-        }
-
-        $client = ClientRepositoryFacade::store($clientData);
-
-        $user = null;
-        $photoLocalPath = null;
-
-        if ($request->has('user')) {
-            $userData = $request->input('user');
-
-            $userPhotoUrl = null;
-            if ($request->hasFile('user.photo')) {
-                $userPhoto = $request->file('user.photo');
-
-                $uploadResult = $this->cloudinary->getCloudinary()->uploadApi()->upload($userPhoto->getRealPath(), [
-                    'folder' => 'users/photos'
-                ]);
-
-                $photoLocalPath = $userPhoto->store('public/photos');
-                $userPhotoUrl = $uploadResult['secure_url'];
+            // Assurez-vous que tous les champs requis sont présents
+            if (!isset($clientData['surname']) || !isset($clientData['adresse']) || !isset($clientData['telephone'])) {
+                throw new \Exception("Tous les champs requis pour le client doivent être remplis.");
             }
 
-            $user = User::create([
-                'nom' => $userData['nom'],
-                'prenom' => $userData['prenom'],
-                'login' => $userData['login'],
-                'email' => $userData['email'],
-                'password' => bcrypt($userData['password']),
-                'role' => $userData['role'] ?? 'CLIENT',
-                'photo' => $userPhotoUrl,
-            ]);
+            $client = ClientRepositoryFacade::store($clientData);
 
-            $client->user()->associate($user);
-            $client->save();
-        }
+            $user = null;
 
-         // Générer le QR code
-         $qrCodePath = $this->generateQrCode($client, $user);
+            if ($request->has('user')) {
+                $userData = $request->input('user');
+
+
+                $user = User::create([
+                    'nom' => $userData['nom'],
+                    'prenom' => $userData['prenom'],
+                    'login' => $userData['login'],
+                    'email' => $userData['email'],
+                    'password' => bcrypt($userData['password']),
+                    'role' => $userData['role'] ?? 'CLIENT',
+                ]);
+
+
+                $client->user()->associate($user);
+                $client->save();
+
+                // store the photo in storage_path("app/public/qr_codes/"
+                $photo = $request->file('user.photo');
+                $storedPhoto = $photo->storeAs('public/photos', $client->surname . '.png');
+                $photoPath = storage_path('app/' . $storedPhoto);
+                $user->photo = $storedPhoto;
+            }
+
+            /*    // Générer le QR code
+         $qrCodePath = $this->qrCodeService->generateQrCode($client, $user);
 
          // Créer la carte de fidélité
          $loyaltyCardPath = $this->loyaltyCardService->createLoyaltyCard($client, $qrCodePath, $user, $photoLocalPath);
  
          // Envoyer l'e-mail avec la carte de fidélité
-         $this->sendLoyaltyCardEmail($client, $user, $loyaltyCardPath);
- 
-        
-
-        DB::commit();
-
-        return [
-            'status' => 201,
-            'data' => $client,
-            'message' => 'Client créé avec succès'
-        ];
-    } catch (Exception $e) {
-        DB::rollBack();
-
-        return [
-            'status' => 500,
-            'data' => null,
-            'message' => 'Erreur lors de la création du client : ' . $e->getMessage()
-        ];
-    }
-}
-    
-public function generateQrCode(Client $client, User $user)
-{
-    $fileName = "{$client->surname}_qr_code.png";
-    $filePath = "public/qr_codes/{$fileName}";
-
-    // Créer les données du QR code avec les informations du client
-    $qrData = [
-        'Nom' => $user->nom,
-        'Prénom' => $user->prenom, // Assurez-vous que ce champ existe dans votre modèle
-        'Adresse' => $client->adresse,   // Assurez-vous que ce champ existe dans votre modèle
-        'Téléphone' => $client->telephone
-    ];
-
-    // Convertir les données en chaîne de caractères
-    $qrContent = '';
-    foreach ($qrData as $key => $value) {
-        $qrContent .= "{$key}: {$value}\n";
-    }
-
-    // Générer le QR code
-    $result = Builder::create()
-        ->writer(new PngWriter())
-        ->data($qrContent)
-        ->build();
-
-    $path = storage_path("app/public/qr_codes/{$fileName}");
-    Storage::put("public/qr_codes/{$fileName}", $result->getString());
-
-    if (!Storage::exists("public/qr_codes/{$fileName}")) {
-        throw new \Exception("Le fichier QR code n'a pas pu être sauvegardé.");
-    }
-
-    return Storage::url("public/qr_codes/{$fileName}");
-}
+         $this->loyaltyCardEmailService->sendLoyaltyCardEmail($client, $user, $loyaltyCardPath);
+  */
+            event(new ClientCreated($client, $user, $photoPath));
 
 
-    public function sendLoyaltyCardEmail(Client $client, ?User $user, string $loyaltyCardPath)
-    {
-        $email = $user ? $user->email : $client->email;
+            DB::commit();
 
-        if (!$email) {
-            throw new Exception("Aucune adresse e-mail disponible pour envoyer la carte de fidélité.");
+            return [
+                'status' => 201,
+                'data' => $client,
+                'message' => 'Client créé avec succès'
+            ];
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return [
+                'status' => 500,
+                'data' => null,
+                'message' => 'Erreur lors de la création du client : ' . $e->getMessage()
+            ];
         }
-
-        Mail::to($email)->send(new LoyaltyCardMail($client, $loyaltyCardPath));
     }
-
 
     public function index()
     {

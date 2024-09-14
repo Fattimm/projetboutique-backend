@@ -9,7 +9,6 @@ use App\Models\Article;
 use App\Models\Paiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreDetteRequest;
 use App\Services\Interfaces\DetteService;
 
@@ -17,16 +16,16 @@ class DetteServiceImpl implements DetteService
 {
     public function create(StoreDetteRequest $request)
     {
-        DB::beginTransaction();
-
+        
         try {
-            // Validation des données
+            DB::beginTransaction();
+            //Validation des données
             $client = Client::findOrFail($request->clientId);
             if ($request->montant <= 0) {
                 throw new Exception("Le montant de la dette doit être positif");
             }
 
-            // Créer la dette
+            //Créer la dette
             $dette = Dette::create([
                 'client_id' => $request->clientId,
                 'montant' => $request->montant,
@@ -39,7 +38,7 @@ class DetteServiceImpl implements DetteService
                     throw new Exception("Quantité insuffisante pour l'article {$article->libelle}");
                 }
 
-                // Mettre à jour la quantité en stock
+                //Mettre à jour la quantité en stock
                 $article->qteStock -= $articleData['qteVente'];
                 $article->save();
 
@@ -69,7 +68,6 @@ class DetteServiceImpl implements DetteService
                 'data' => $dette->load('client', 'articles', 'paiements'),
                 'message' => 'Dette enregistrée avec succès',
             ];
-
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -85,7 +83,6 @@ class DetteServiceImpl implements DetteService
     public function index($statut = null)
     {
         try {
-            // Récupération des dettes en fonction du statut
             $query = Dette::query()->with('client');
 
             if ($statut === 'Solde') {
@@ -109,7 +106,6 @@ class DetteServiceImpl implements DetteService
                 'data' => $dettes,
                 'message' => 'Liste des dettes',
             ];
-
         } catch (\Exception $e) {
             return [
                 'status' => 500,
@@ -199,7 +195,7 @@ class DetteServiceImpl implements DetteService
             ];
         }
     }
-    
+
     public function addPaiement(Request $request, $id)
     {
         $dette = Dette::find($id);
@@ -217,7 +213,7 @@ class DetteServiceImpl implements DetteService
 
         // Vérifier que le montant du paiement est valide
         $montantPaiement = $request->input('paiement.montant');
-        
+
         if (is_null($montantPaiement) || !is_numeric($montantPaiement)) {
             return [
                 'status' => 400,
@@ -252,7 +248,6 @@ class DetteServiceImpl implements DetteService
                 ],
                 'message' => 'Paiement ajouté avec succès',
             ];
-
         } catch (\Exception $e) {
             return [
                 'status' => 500,
@@ -261,7 +256,4 @@ class DetteServiceImpl implements DetteService
             ];
         }
     }
-
-
-
 }

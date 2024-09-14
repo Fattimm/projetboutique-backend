@@ -14,7 +14,7 @@ use App\Services\ClientServiceImpl;
 
 class LoyaltyCardService
 {
-    public function createLoyaltyCard(Client $client, string $qrCodePath, User $user,String $photoPath): string
+    public function createLoyaltyCard(Client $client, string $qrCodePath, User $user, $photoPath): string
     {
 
         $html = $this->generateLoyaltyCardHtml($client, $qrCodePath, $photoPath);
@@ -32,7 +32,7 @@ class LoyaltyCardService
     }
 
 
-    private function generateLoyaltyCardHtml(Client $client, string $qrCodePath, string $photoPath): string
+    private function generateLoyaltyCardHtml(Client $client, string $qrCodePath, $photoPath): string
     {
 
         // Lire les fichiers pour les convertir en base64
@@ -157,7 +157,6 @@ class LoyaltyCardService
                         <img src='data:image/jpeg;base64,{$photoBase64}' alt='Photo du Client' class='photo'/>
                     </div>
                     <div class='name'>Nom : {$client->surname}</div>
-                    <div class='tel'>Téléphone : {$client->telephone}</div>
                     <div class='qr-code'>
                         <img src='data:image/png;base64,{$qrCodeBase64}' alt='QR Code'/>
                     </div>

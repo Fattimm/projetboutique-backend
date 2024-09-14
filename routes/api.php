@@ -4,9 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\DetteController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DetteController;
 use Laravel\Passport\Http\Controllers\ScopeController;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Laravel\Passport\Http\Controllers\AuthorizationController;
@@ -23,55 +23,51 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
- Route::post('v1/login', [AuthController::class, 'login']);
- Route::post('v1/register', [AuthController::class, 'register']);
-
-// Route::group(['middleware' => 'auth:api', 'prefix' => 'v1'], function () {
 Route::prefix('v1')->group(function () {
-    
+
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+
     // Route::group(['middleware' => ['role:ADMIN']], function () {
 
-        Route::post('users', [UserController::class, 'store']);
-        Route::get('users', [UserController::class, 'index']);
+    Route::post('users', [UserController::class, 'store']);
+    Route::get('users', [UserController::class, 'index']);
 
-       
+    Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
 
-        Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
-                            
     // });
-    
+
     // Route::group(['middleware' => ['role:BOUTIQUIER']], function () {
-        
-        Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
-        Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
-        Route::post('/articles', [ArticleController::class, 'store']);
-        Route::get('/articles', [ArticleController::class, 'index']);
-        Route::get('/articles/{id}', [ArticleController::class, 'showById']);
-        Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
+
+    Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
+    Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+    Route::post('/articles', [ArticleController::class, 'store']);
+    Route::get('/articles', [ArticleController::class, 'index']);
+    Route::get('/articles/{id}', [ArticleController::class, 'showById']);
+    Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 
 
-       
-        Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
-        Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
-        Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
-        Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
-        Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
-        Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);  
-          
+
+    Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
+    Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
+    Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+    Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+    Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+
     // });
 
 
-        Route::post('/dettes', [DetteController::class, 'store']);
-        Route::get('/dettes', [DetteController::class, 'index']);
-        Route::get('/dettes/{id}', [DetteController::class, 'show']);
-        Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
-        Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
-        Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
+    Route::post('/dettes', [DetteController::class, 'store']);
+    Route::get('/dettes', [DetteController::class, 'index']);
+    Route::get('/dettes/{id}', [DetteController::class, 'show']);
+    Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
+    Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
+    Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
 
 
 
-        Route::get('/logout', [AuthController::class, 'logout']);
-
+    Route::get('/logout', [AuthController::class, 'logout']);
 });
 
 
@@ -94,7 +90,7 @@ Route::get('/authorize', [
 
 $guard = config('passport.guard', null);
 
-Route::middleware(['web', $guard ? 'auth:'.$guard : 'auth'])->group(function () {
+Route::middleware(['web', $guard ? 'auth:' . $guard : 'auth'])->group(function () {
     Route::post('/token/refresh', [
         'uses' => [TransientTokenController::class, 'refresh'],
         'as' => 'token.refresh',
