@@ -12,10 +12,12 @@
         "dompdf/dompdf": "^3.0",
         "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.9",
+        "kreait/laravel-firebase": "^5.9",
         "laravel/framework": "^10.10",
         "laravel/passport": "*",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "mongodb/mongodb": "^1.19",
         "spatie/laravel-query-builder": "^5.7"
     },
     "require-dev": {

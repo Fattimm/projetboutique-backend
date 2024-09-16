@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Repositories;
+namespace App\Repositories\Interfaces;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreDetteRequest;

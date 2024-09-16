@@ -3,20 +3,19 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can create users.
-     *
-     * @param  \App\Models\User  $user
-     * @return mixed
-     */
-    public function create(User $user)
+    // Autorisation pour créer un compte utilisateur (ADMIN uniquement)
+    public function store(User $user)
     {
         return $user->role === 'ADMIN';
     }
+
+    // Autorisation pour lister les utilisateurs (ADMIN uniquement)
+    public function index(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
 }

@@ -7,17 +7,12 @@ use App\Models\User;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Events\ClientCreated;
-use App\Services\LoyaltyCardMail;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Services\CloudinaryService;
-use Endroid\QrCode\Builder\Builder;
 use App\Services\LoyaltyCardService;
-use Endroid\QrCode\Writer\PngWriter;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use App\Facades\ClientRepositoryFacade;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreClientRequest;
 use App\Services\Interfaces\ClientService;
 
@@ -78,19 +73,11 @@ class ClientServiceImpl implements ClientService
                 $storedPhoto = $photo->storeAs('public/photos', $client->surname . '.png');
                 $photoPath = storage_path('app/' . $storedPhoto);
                 $user->photo = $storedPhoto;
+
+
+                event(new ClientCreated($client, $user, $photoPath));
+
             }
-
-            /*    // Générer le QR code
-         $qrCodePath = $this->qrCodeService->generateQrCode($client, $user);
-
-         // Créer la carte de fidélité
-         $loyaltyCardPath = $this->loyaltyCardService->createLoyaltyCard($client, $qrCodePath, $user, $photoLocalPath);
- 
-         // Envoyer l'e-mail avec la carte de fidélité
-         $this->loyaltyCardEmailService->sendLoyaltyCardEmail($client, $user, $loyaltyCardPath);
-  */
-            event(new ClientCreated($client, $user, $photoPath));
-
 
             DB::commit();
 
@@ -144,6 +131,9 @@ class ClientServiceImpl implements ClientService
             'message' => 'Liste des clients'
         ];
     }
+    
+
+
     public function filterByStatus(Request $request)
     {
         $active = $request->query('active');

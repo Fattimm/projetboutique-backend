@@ -4,7 +4,25 @@ info:
   description: API pour gérer les utilisateurs dans l'application
   version: 1.0.0
 servers:
-  - url: http://localhost:4000/api/v1
+  - url: http://localhost:8000/api/v1
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  security:
+    - BearerAuth: []
+    
+schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
 paths:
   /login:
     post:
@@ -1128,3 +1146,258 @@ paths:
                     type: integer
                   message:
                     type: string
+
+  /dettes:
+    get:
+      summary: Récupérer la liste des dettes
+      description: Récupère la liste des dettes avec option de filtrage par statut (Solde ou NonSolde)
+      tags:
+        - Dettes
+      parameters:
+        - name: statut
+          in: query
+          description: Filtrer les dettes par statut (Solde ou NonSolde)
+          required: false
+          schema:
+            type: string
+            enum: [Solde, NonSolde]
+      responses:
+        '200':
+          description: Liste des dettes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Liste des dettes récupérée avec succès"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dette'
+        '404':
+          description: Aucune dette trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dettes/{id}:
+    get:
+      summary: Récupérer une dette
+      description: Récupère les informations détaillées d'une dette
+      tags:
+        - Dettes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dette trouvée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Dette trouvée avec succès"
+                  data:
+                    $ref: '#/components/schemas/Dette'
+        '404':
+          description: Dette non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      summary: Créer une dette
+      description: Crée une nouvelle dette pour un client avec des articles et éventuellement un paiement
+      tags:
+        - Dettes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDetteRequest'
+      responses:
+        '201':
+          description: Dette créée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Dette créée avec succès"
+                  data:
+                    $ref: '#/components/schemas/Dette'
+        '500':
+          description: Erreur lors de la création de la dette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dettes/{id}/articles:
+    get:
+      summary: Récupérer les articles d'une dette
+      description: Récupère la liste des articles associés à une dette
+      tags:
+        - Dettes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des articles associée à la dette récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Liste des articles récupérée avec succès"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Article'
+        '404':
+          description: Dette non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dettes/{id}/paiements:
+    get:
+      summary: Récupérer les paiements d'une dette
+      description: Récupère la liste des paiements associés à une dette
+      tags:
+        - Dettes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des paiements associée à la dette récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Liste des paiements récupérée avec succès"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Paiement'
+        '404':
+          description: Dette non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    post:
+      summary: Ajouter un paiement à une dette
+      description: Ajoute un paiement à une dette existante
+      tags:
+        - Dettes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddPaiementRequest'
+      responses:
+        '200':
+          description: Paiement ajouté avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Paiement ajouté avec succès"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Paiement'
+        '400':
+          description: Paiement invalide ou montant dépassant le solde
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erreur lors de l'ajout du paiement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  

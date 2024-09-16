@@ -20,13 +20,11 @@ class UserServiceImpl implements UserService
     public function __construct() {
 
         $this->cloudinaryService = new cloudinaryService();
-        // $this->authorizeResource(User::class, 'user');
 
     }
 
     public function store(StoreUserRequest $request)
     {
-        // $this->authorize('create', User::class);
 
         DB::beginTransaction();
 

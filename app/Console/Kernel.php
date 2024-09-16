@@ -13,6 +13,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        // // Envoyer le résumé des dettes dues tous les vendredis à 14h
+        // $schedule->job(new \App\Jobs\ProcessDettes)->weeklyOn(5, '14:00');
+
+        // // Archiver les dettes soldées chaque fin de journée
+        // $schedule->job(new \App\Jobs\ProcessDettes)->dailyAt('23:59');
     }
 
     /**

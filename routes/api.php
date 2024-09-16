@@ -18,57 +18,52 @@ use Laravel\Passport\Http\Controllers\AuthorizedAccessTokenController;
 
 
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 Route::prefix('v1')->group(function () {
 
+    // Route de login sans middleware
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [AuthController::class, 'register']);
 
-    // Route::group(['middleware' => ['role:ADMIN']], function () {
+    // Routes protégées par auth:api middleware
+    Route::middleware('auth:api')->group(function () {
 
-    Route::post('users', [UserController::class, 'store']);
-    Route::get('users', [UserController::class, 'index']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/users', [UserController::class, 'store']);
+        Route::get('/users', [UserController::class, 'index']);
+        Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
 
-    Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
+        Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
+        Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+        Route::post('/articles', [ArticleController::class, 'store']);
+        Route::get('/articles', [ArticleController::class, 'index']);
+        Route::get('/articles/{id}', [ArticleController::class, 'showById']);
+        Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 
-    // });
-
-    // Route::group(['middleware' => ['role:BOUTIQUIER']], function () {
-
-    Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
-    Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
-    Route::post('/articles', [ArticleController::class, 'store']);
-    Route::get('/articles', [ArticleController::class, 'index']);
-    Route::get('/articles/{id}', [ArticleController::class, 'showById']);
-    Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
-
-
-
-    Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
-    Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
-    Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
-    Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
-    Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
-    Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
-
-    // });
+        Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+        Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
+        Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
+        Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+        Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+        Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
 
 
-    Route::post('/dettes', [DetteController::class, 'store']);
-    Route::get('/dettes', [DetteController::class, 'index']);
-    Route::get('/dettes/{id}', [DetteController::class, 'show']);
-    Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
-    Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
-    Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
+        Route::post('/dettes', [DetteController::class, 'store']);
+        Route::get('/dettes', [DetteController::class, 'index']);
+        Route::get('/dettes/{id}', [DetteController::class, 'show']);
+        Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
+        Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
+        Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
 
-
-
-    Route::get('/logout', [AuthController::class, 'logout']);
+        Route::get('/logout', [AuthController::class, 'logout']);
+    });
 });
+
+
+
 
 
 
