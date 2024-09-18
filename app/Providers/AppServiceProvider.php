@@ -8,12 +8,14 @@ use App\Services\DetteServiceImpl;
 use App\Services\ClientServiceImpl;
 use App\Services\ArticleServiceImpl;
 use Laravel\Passport\ClientRepository;
+use App\Services\MongoArchivageService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Interfaces\UserService;
 use App\Services\Interfaces\DetteService;
 use App\Repositories\ClientRepositoryImpl;
 use App\Repositories\ArticleRepositoryImpl;
 use App\Services\Interfaces\ArticleService;
+use App\Services\Interfaces\ArchivageService;
 use App\Repositories\Interfaces\ArticleRepository;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
             return new UploadService();
         });
         $this->app->singleton(DetteService::class, DetteServiceImpl::class);
+        $this->app->bind(ArchivageService::class, MongoArchivageService::class);
+
     }
 
 

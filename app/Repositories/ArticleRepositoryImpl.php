@@ -30,13 +30,6 @@ class ArticleRepositoryImpl implements ArticleRepository
         Dette::destroy($id);
     }
     
-    public function index($statut = null){
-        if($statut){
-            return Dette::where('statut', $statut)->get();
-        }
-        return Dette::all();
-    }
-    
     public function show($id){
         return Dette::find($id);
     }
@@ -58,12 +51,31 @@ class ArticleRepositoryImpl implements ArticleRepository
         return Dette::find($id);
     }
 
-    public function getAvailableArticles(){
-        return Article::where('stock', '>', 0)->get();
+    public function findById($articleId)
+    {
+        return Dette::findById($articleId);
     }
 
-    public function getUnavailableArticles(){
-        return Article::where('stock', 0)->get();
+    public function insert(array $articleData)
+    {
+        return Dette::insert($articleData);
+    }
+
+    public function getAvailableArticles()
+    {
+        return Article::where('qteStock', '>=', 1)->get();
+    }
+
+    // Méthode pour récupérer les articles avec qtéStock < 1
+    public function getUnavailableArticles()
+    {
+        return Article::where('qteStock', '<', 1)->get();
+    }
+
+    // Méthode pour récupérer tous les articles
+    public function index()
+    {
+        return Article::all();
     }
 
     public function findByLibelle($libelle){

@@ -15,5 +15,7 @@ interface ClientService
     public function show($id);
     public function getClientWithUser($id);
     public function getClientDettes($id);
+    // public function insert();
+    
     
 }

@@ -107,32 +107,74 @@ class ClientServiceImpl implements ClientService
         ];
     }
 
+    // public function filterByAccount(Request $request)
+    // {
+    //     $comptes = $request->query('comptes');
+
+    //     if ($comptes === 'oui') {
+    //         // Clients ayant un user_id non nul (ont un compte utilisateur)
+    //         $clients = Client::whereNotNull('user_id')->get();
+    //     } elseif ($comptes === 'non') {
+    //         // Clients n'ayant pas de user_id (n'ont pas de compte utilisateur)
+    //         $clients = Client::whereNull('user_id')->get();
+    //     } else {
+    //         return [
+    //             'status' => 400,
+    //             'data' => null,
+    //             'message' => 'Paramètre "comptes" invalide. Utilisez "oui" ou "non".'
+    //         ];
+    //     }
+
+    //     return [
+    //         'status' => 200,
+    //         'data' => $clients,
+    //         'message' => 'Liste des clients'
+    //     ];
+    // }
     public function filterByAccount(Request $request)
-    {
-        $comptes = $request->query('comptes');
+{
+    $comptes = $request->query('comptes');
+
+    // Validation du paramètre 'comptes'
+    if (!in_array($comptes, ['oui', 'non'])) {
+        return response()->json([
+            'status' => 400,
+            'data' => null,
+            'message' => 'Paramètre "comptes" invalide. Utilisez "oui" ou "non".'
+        ], 400);
+    }
+
+    try {
+        // Construire la requête en fonction du paramètre 'comptes'
+        $query = Client::query(); // Assurez-vous que Client est votre modèle Eloquent
 
         if ($comptes === 'oui') {
-            // Clients ayant un user_id non nul (ont un compte utilisateur)
-            $clients = Client::whereNotNull('user_id')->get();
+            $query->whereNotNull('user_id');
         } elseif ($comptes === 'non') {
-            // Clients n'ayant pas de user_id (n'ont pas de compte utilisateur)
-            $clients = Client::whereNull('user_id')->get();
-        } else {
-            return [
-                'status' => 400,
-                'data' => null,
-                'message' => 'Paramètre "comptes" invalide. Utilisez "oui" ou "non".'
-            ];
+            $query->whereNull('user_id');
         }
 
-        return [
+        // Exécuter la requête et récupérer les clients
+        $clients = $query->get();
+
+        return response()->json([
             'status' => 200,
             'data' => $clients,
             'message' => 'Liste des clients'
-        ];
+        ], 200);
+    } catch (\Exception $e) {
+        // Gérer les exceptions potentielles
+        return response()->json([
+            'status' => 500,
+            'data' => null,
+            'message' => 'Une erreur est survenue lors de la récupération des clients.',
+            'error' => $e->getMessage()
+        ], 500);
     }
-    
+}
 
+
+    
 
     public function filterByStatus(Request $request)
     {
@@ -301,4 +343,6 @@ class ClientServiceImpl implements ClientService
             ];
         }
     }
+
+    
 }

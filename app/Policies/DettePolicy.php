@@ -41,4 +41,31 @@ class DettePolicy
         // Un admin ou un boutiquier peut voir les paiements des dettes
         return $user->role === 'BOUTIQUIER';
     }
+
+    public function archiver(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
+    public function afficherDettesArchivees(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
+    public function restaurer(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
+    public function restaurerParClient(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
+    public function restaurerParDate(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
+
 }

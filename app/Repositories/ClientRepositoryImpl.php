@@ -21,7 +21,7 @@ class ClientRepositoryImpl implements ClientRepository
     }
 
     public function create(){
-        return new Client();
+        return Client::create();
     }
 
     public function store(array $clientData)
@@ -32,10 +32,21 @@ class ClientRepositoryImpl implements ClientRepository
     public function filterByAccount($request){
         return Client::where('account_number', $request->account_number)->get();
     }
+    public function whereNull()
+    {
+        return Client::whereNull('user_id')->get();
+    }
+    
+    public function whereNotNull()
+    {
+        return Client::whereNotNull('user_id')->get();
+    }
 
     public function filterByStatus($request){
         return Client::where('status', $request->status)->get();
     }
+
+ 
 
     public function searchByTelephone($request){
         return Client::where('telephone', $request->telephone)->first();
@@ -59,6 +70,10 @@ class ClientRepositoryImpl implements ClientRepository
 
     public function getClientDettes($id){
         return Client::find($id)->dettes;
+    }
+
+    public function insert(){
+        return Client::create([]);
     }
 
 

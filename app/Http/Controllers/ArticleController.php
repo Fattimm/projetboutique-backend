@@ -49,10 +49,22 @@ class ArticleController extends Controller
         return $this->articleService->showById($id);
     }
 
-    public function showByLibelle(UpdateArticleRequest $request)
+    public function showByLibelle(Request $request)
     {
+        // Validation des données de la requête
+        $request->validate([
+            'libelle' => 'required|string|max:255',
+        ]);
+
+        // Autoriser l'accès basé sur la politique
         $this->authorize('showByLibelle', Article::class);
-        return $this->articleService->showByLibelle($request->validated());
+
+        // Obtenir le libellé de la requête
+        $libelle = $request->input('libelle');
+
+        // Appeler le service pour récupérer les articles
+        return  $result = $this->articleService->showByLibelle(['libelle' => $libelle]);
+                
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 use App\Models\Dette;
-use App\Interfaces\Repositories\DetteRepository;
+use App\Repositories\Interfaces\DetteRepository;
 
 class DetteRepositoryImpl extends DetteRepository{
    

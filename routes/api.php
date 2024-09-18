@@ -4,9 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DetteController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\DetteController;
+use App\Http\Controllers\DetteArchivageController;
 use Laravel\Passport\Http\Controllers\ScopeController;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Laravel\Passport\Http\Controllers\AuthorizationController;
@@ -36,13 +37,15 @@ Route::prefix('v1')->group(function () {
         Route::get('/users', [UserController::class, 'index']);
         Route::delete('/users/{id}', [UserController::class, 'deleteAccount']);
 
-        Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
-        Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+
         Route::post('/articles', [ArticleController::class, 'store']);
         Route::get('/articles', [ArticleController::class, 'index']);
+        Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
+        Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
         Route::get('/articles/{id}', [ArticleController::class, 'showById']);
         Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 
+        
         Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
         Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
         Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
@@ -57,6 +60,15 @@ Route::prefix('v1')->group(function () {
         Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
         Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
         Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
+
+
+
+        Route::post('/dette/archiver/{id}', [DetteArchivageController::class, 'archiver']);
+        Route::get('/dette/archiver', [DetteArchivageController::class, 'afficherDettesArchivees']);
+        Route::post('/dette/restaurer/{id}', [DetteArchivageController::class, 'restaurer']);
+        Route::post('/dette/restaurer/client/{clientId}', [DetteArchivageController::class, 'restaurerParClient']);
+        Route::post('/dette/restaurer/date/{date}', [DetteArchivageController::class, 'restaurerParDate']);
+
 
         Route::get('/logout', [AuthController::class, 'logout']);
     });

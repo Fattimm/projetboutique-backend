@@ -9,7 +9,13 @@ class Dette extends Model
 {
     use HasFactory;
   
-  protected $fillable = ['client_id', 'montant'];
+    protected $fillable = ['client_id', 'montant'];
+
+    protected $hidden = [
+       'created_at',
+       'updated_at',
+       'deleted_at',
+      ];
 
     public function client()
     {

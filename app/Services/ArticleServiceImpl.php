@@ -115,7 +115,7 @@ class ArticleServiceImpl implements ArticleService
         $libelle = $data['libelle'] ?? '';
 
         // Rechercher les articles par libellé
-        $articles = $this->repo->findByLibelle($libelle)->get();
+        $articles = $this->repo->findByLibelle($libelle);
 
         return [
             'data' => $articles,

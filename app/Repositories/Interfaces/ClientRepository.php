@@ -10,7 +10,10 @@ interface ClientRepository
     public function index();
     public function find($id);
     public function create();
+    public function insert();
     public function store(array $clientData);
+    public function whereNull();
+    public function whereNotNull();
     public function filterByAccount($request);
     public function filterByStatus($request);
     public function searchByTelephone($request);
