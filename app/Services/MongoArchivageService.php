@@ -16,8 +16,8 @@ class MongoArchivageService implements ArchivageService
 
     public function __construct()
     {
-        $this->mongo = (new Client('mongodb+srv://diamata998:qPDUuA1WJoF6CKY7@cluster0.b1mt2.mongodb.net/maboutique?retryWrites=true&w=majority&appName=Cluster0'))
-            ->selectDatabase('maboutique');
+        $this->mongo = (new Client(env('MONGODB_URI')))
+            ->selectDatabase(env('MONGODB_DATABASE', 'maboutique'));
     }
 
     public function archiverDette($detteId)
@@ -75,7 +75,8 @@ class MongoArchivageService implements ArchivageService
     {
         try {
             // Récupération des dettes archivées
-            $dettes = $this->mongo->archive_dette->find()->toArray();
+            $collectionName = 'archive_dettes_' . now()->format('Y_m_d');
+            $dettes = $this->mongo->$collectionName->find()->toArray();
 
             return [
                 'status' => 200,
@@ -95,8 +96,9 @@ class MongoArchivageService implements ArchivageService
     {
         try {
             // Recherche de la dette archivée
-            $detteData = $this->mongo->archive_dette->findOne(['_id' => $detteId]);
-    
+            $collectionName = 'archive_dettes_' . now()->format('Y_m_d');
+            $detteData = $this->mongo->$collectionName->findOne(['_id' => $detteId]);
+                
             if (!$detteData) {
                 throw new Exception("Dette non trouvée dans les archives");
             }
@@ -108,7 +110,7 @@ class MongoArchivageService implements ArchivageService
             Dette::create($detteArray);
     
             // Suppression de la dette dans les archives MongoDB
-            $this->mongo->archive_dette->deleteOne(['_id' => $detteId]);
+            $this->mongo->$collectionName->deleteOne(['_id' => $detteId]);
     
             return [
                 'status' => 200,

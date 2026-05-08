@@ -20,7 +20,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request){
 
         $this->authorize('store', User::class);
-        return User::create($request->all());
+        return $this->userService->store($request);
     }
 
     public function index(Request $request)
@@ -32,4 +32,12 @@ class UserController extends Controller
         return response()->json($response, $response['status']);
     }
 
+    public function deleteAccount($id)
+    {
+        $this->authorize('deleteAccount', User::class);
+        
+        $response = $this->userService->deleteAccount($id);
+        return response()->json($response, $response['status']);
+    }
+    
 }

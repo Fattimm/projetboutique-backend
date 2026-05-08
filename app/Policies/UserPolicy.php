@@ -18,4 +18,10 @@ class UserPolicy
         return $user->role === 'ADMIN';
     }
 
+    // Autorisation pour supprimer un compte utilisateur (ADMIN uniquement)
+    public function deleteAccount(User $user)
+    {
+        return $user->role === 'ADMIN';
+    }
+
 }

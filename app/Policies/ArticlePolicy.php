@@ -15,6 +15,8 @@ class ArticlePolicy
     // Autorisation pour lister les articles (BOUTIQUIER uniquement)
     public function index(User $user)
     {
+            \Log::info('role user: ' . $user->role . ' role_id: ' . $user->role_id);
+
         return $user->role === 'BOUTIQUIER';
     }
 

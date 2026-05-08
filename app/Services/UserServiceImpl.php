@@ -31,7 +31,7 @@ class UserServiceImpl implements UserService
         try {
             // Récupérer les données de la requête validée
             $userData = $request->only('nom', 'prenom', 'login', 'password','email', 'role','photo');
-
+            
             // Valider le rôle
             $allowedRoles = ['ADMIN', 'BOUTIQUIER'];
             if (!in_array($userData['role'], $allowedRoles)) {
@@ -45,14 +45,14 @@ class UserServiceImpl implements UserService
                // Utilisation de l'instance Cloudinary
                $uploadResult = $this->cloudinaryService->getCloudinary()->uploadApi()->upload($userPhoto->getRealPath(), [
                 'folder' => 'users/photos'
-            ]);
+                ]);
 
                 // Enregistrement de la photo dans le stockage local (storage/app/public/photos)
                $photoLocalPath = $userPhoto->storeAs('public/photos', $userPhoto->getClientOriginalName());
 
 
                 // Obtenir l'URL de l'image
-                $userPhotoUrl = $uploadResult['secure_url'];
+                $photoUrl = $uploadResult['secure_url'];
             }
 
             // Créer un nouvel utilisateur
@@ -62,8 +62,8 @@ class UserServiceImpl implements UserService
                 'login' => $userData['login'],
                 'email' => $userData['email'],
                 'password' => bcrypt($userData['password']),
-                'role' => $userData['role'],
-                'photo' => $userPhotoUrl,
+                'role_id' => $userData['role'],
+                'photo' => $photoUrl,
             ]);
 
             DB::commit();
@@ -90,7 +90,7 @@ class UserServiceImpl implements UserService
         $query = User::query();
 
         if (isset($filters['role'])) {
-            $query->where('role', $filters['role']);
+            $query->where('role_id', $filters['role']);
         }
 
         if (isset($filters['active'])) {
@@ -110,4 +110,23 @@ class UserServiceImpl implements UserService
         ];
     }
 
+    public function deleteAccount($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return [
+                'status' => 200,
+                'data' => null,
+                'message' => 'Compte utilisateur supprimé avec succès'
+            ];
+        } catch (Exception $e) {
+            return [
+                'status' => 500,
+                'data' => null,
+                'message' => 'Erreur lors de la suppression du compte utilisateur : ' . $e->getMessage()
+            ];
+        }
+    }
 }

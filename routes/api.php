@@ -42,22 +42,22 @@ Route::prefix('v1')->group(function () {
         Route::get('/articles', [ArticleController::class, 'index']);
         Route::patch('/articles/{id}', [ArticleController::class, 'updateStock']);
         Route::post('/articles/stock', [ArticleController::class, 'updateMultipleStocks']);
+        Route::get('/articles/libelle', [ArticleController::class, 'showByLibelle']);
         Route::get('/articles/{id}', [ArticleController::class, 'showById']);
-        Route::post('/articles/libelle', [ArticleController::class, 'showByLibelle']);
 
         
-        Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
         Route::get('/clients/filter', [ClientController::class, 'filterByAccount']);
         Route::get('/clients/status', [ClientController::class, 'filterByStatus']);
-        Route::post('/clients/telephone', [ClientController::class, 'searchByTelephone']);
-        Route::post('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
-        Route::post('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
+        Route::get('/clients/telephone', [ClientController::class, 'searchByTelephone']);
+        Route::apiResource('/clients', ClientController::class)->only(['index', 'store', 'show']);
+        Route::get('/clients/{id}/dettes', [ClientController::class, 'getClientDettes']);
+        Route::get('/clients/{id}/user', [ClientController::class, 'getClientWithUser']);
 
 
         Route::post('/dettes', [DetteController::class, 'store']);
         Route::get('/dettes', [DetteController::class, 'index']);
         Route::get('/dettes/{id}', [DetteController::class, 'show']);
-        Route::post('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
+        Route::get('/dettes/{id}/articles', [DetteController::class, 'listArticles']);
         Route::get('/dettes/{id}/paiements', [DetteController::class, 'listPaiements']);
         Route::post('/dettes/{id}/paiements', [DetteController::class, 'addPaiement']);
 

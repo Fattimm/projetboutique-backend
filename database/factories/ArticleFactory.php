@@ -20,7 +20,7 @@ class ArticleFactory extends Factory
     public function definition(): array
     {
         return [
-            'libelle' => $this->faker->word,
+            'libelle' => $this->faker->unique()->sentence(2),
             'prix' => $this->faker->randomFloat(2, 10, 1000), // Prix entre 10 et 1000 avec 2 décimales
             'qteStock' => $this->faker->numberBetween(1, 100), // Quantité entre 1 et 100
         ];

@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'prenom' => fake()->name(),
             'login' => fake()->username(),
             'email' => $this->faker->unique()->safeEmail,
-            'role' => 'BOUTIQUIER',
+            'role_id' => \App\Models\Role::where('name', 'BOUTIQUIER')->first()?->id,
             'password' => static::$password ??= Hash::make('password'),
             'photo' => $this->faker->imageUrl(640, 480, 'people', true),
         ];
@@ -39,14 +39,14 @@ class UserFactory extends Factory
      */
     public function admin(){
         return $this->state(fn (array $attributes) => [
-            'role' => 'ADMIN',
+            'role_id' => \App\Models\Role::where('name', 'ADMIN')->first()?->id,
         ]);
     }
 
     public function client()
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'CLIENT',
+            'role_id' => \App\Models\Role::where('name', 'CLIENT')->first()?->id,
         ]);
     }
 }

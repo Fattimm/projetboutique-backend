@@ -10,8 +10,8 @@ class MongoArchivageRepositoryImpl
 
     public function __construct()
     {
-        $this->mongo = (new Client('mongodb+srv://diamata998:qPDUuA1WJoF6CKY7@cluster0.b1mt2.mongodb.net/maboutique?retryWrites=true&w=majority&appName=Cluster0'))
-            ->selectDatabase('maboutique');
+        $this->mongo = (new Client(env('MONGODB_URI')))
+            ->selectDatabase(env('MONGODB_DATABASE', 'maboutique'));
     }
 
     // Insérer une dette archivée

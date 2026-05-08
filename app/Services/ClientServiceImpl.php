@@ -270,7 +270,8 @@ class ClientServiceImpl implements ClientService
     {
         $user = User::find($userId);
         if ($user) {
-            $user->deletedAt = now();
+            // $user->deletedAt = now();
+            $user->delete();
             $user->save();
 
             return [

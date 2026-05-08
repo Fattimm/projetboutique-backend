@@ -16,10 +16,15 @@ class ArticleRepositoryImpl implements ArticleRepository
         $this->article = $article;
     }
 
-    public function create($request){
-        return Dette::create($request->all());
+    // public function create($request){
+    //     return Dette::create($request->all());
+    // }
+    public function create(array $data){ 
+        return Article::create($data); 
     }
-    
+    public function find($id){ 
+        return Article::find($id); 
+    }
     public function update($id, $request){
         $dette = Dette::find($id);
         $dette->update($request->all());
@@ -47,9 +52,9 @@ class ArticleRepositoryImpl implements ArticleRepository
         $dette->paiements()->create($request->all());
     }
 
-    public function find($id){
-        return Dette::find($id);
-    }
+    // public function find($id){
+    //     return Dette::find($id);
+    // }
 
     public function findById($articleId)
     {

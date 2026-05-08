@@ -58,7 +58,10 @@ class AuthentificationPassport implements AuthentificationServiceInterface
 
         if ($user) {
             // Révoquer tous les tokens de l'utilisateur authentifié
-            $user->tokens->delete();
+           // $user->tokens->delete();
+            $user->tokens()->each(function ($token) {
+                $token->delete();
+            });
         }
 
         return [

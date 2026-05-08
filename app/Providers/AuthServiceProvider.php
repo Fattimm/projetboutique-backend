@@ -9,7 +9,8 @@ use App\Policies\UserPolicy;
 use OpenApi\Attributes\Post;
 use App\Policies\ClientPolicy;
 use Laravel\Passport\Passport;
-use Workbench\App\Models\User;
+// use Workbench\App\Models\User;
+use App\Models\User;
 use App\Policies\ArticlePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -25,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Article::class => ArticlePolicy::class,
         Client::class => ClientPolicy::class,
+        Dette::class   => DettePolicy::class,
 
     ];
      

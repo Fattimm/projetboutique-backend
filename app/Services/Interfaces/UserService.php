@@ -9,5 +9,5 @@ interface UserService
 {
     public function store(StoreUserRequest $request);
     public function listUsers($filters = []);
-
+    public function deleteAccount($id);
 }

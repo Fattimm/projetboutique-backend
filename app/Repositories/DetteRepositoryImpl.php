@@ -4,7 +4,7 @@ namespace App\Repositories;
 use App\Models\Dette;
 use App\Repositories\Interfaces\DetteRepository;
 
-class DetteRepositoryImpl extends DetteRepository{
+class DetteRepositoryImpl implements DetteRepository{
    
     public function create($request){
         return Dette::class::create($request);

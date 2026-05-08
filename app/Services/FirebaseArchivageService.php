@@ -58,8 +58,8 @@ class FirebaseArchivageService implements ArchivageService
             'status' => 500,
             'message' => "Erreur lors de l'archivage de la dette : " . $e->getMessage()
         ];
+        }
     }
-}
 
     public function afficherDettesArchivees()
     {
@@ -75,11 +75,11 @@ class FirebaseArchivageService implements ArchivageService
 
     public function restaurerDettesParDate($date)
     {
-
+        throw new \Exception('Non implémenté');
     }
 
     public function restaurerDettesParClient($clientId)
     {
-
+        throw new \Exception('Non implémenté');
     }
 }

@@ -28,7 +28,7 @@ class User extends Authenticatable
         'login',
         'email',
         'password',
-        'role',
+        'role_id',
         'photo',
     ];
     /**
@@ -37,7 +37,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-      //  'password',
+     'password',
      'created_at',
      'updated_at',
      'deletedAt',
@@ -67,6 +67,11 @@ class User extends Authenticatable
     public function hasRole($roleName)
     {
         return $this->role->contains('name', $roleName);
+    }
+
+    public function getRoleAttribute()
+    {
+        return $this->role_id;
     }
 
 }
