@@ -103,14 +103,15 @@ class AuthentificationPassport implements AuthentificationServiceInterface
             }
 
             // Créer l'utilisateur (opération transactionnelle)
+            $roleId = $this->getRoleIdByName($validatedData['role']);
             $user = User::create([
                 'login' => $validatedData['login'],
                 'nom' => $validatedData['nom'],
                 'prenom' => $validatedData['prenom'],
                 'email' => $validatedData['email'],
                 'password' => bcrypt($validatedData['password']),
-                'role' => $validatedData['role'],
-                'photo' => $photoUrl,  // URL de la photo si disponible
+                'role_id' => $roleId,
+                'photo' => $photoUrl,
             ]);
 
             // Associer l'utilisateur au client (opération transactionnelle)
@@ -121,24 +122,34 @@ class AuthentificationPassport implements AuthentificationServiceInterface
             DB::commit();
 
             // Répondre avec succès
-            return response()->json([
-                'status' => 'success',
+            return [
+                'status' => 201,
                 'data' => [
                     'client' => $client,
                     'user' => $user,
                     'image_path' => $photoUrl,
-                ]
-            ], 201);
+                ],
+                'message' => 'Utilisateur créé avec succès'
+            ];
 
         } catch (Exception $e) {
-            DB::rollBack();  // Annuler la transaction en cas d'erreur
+            DB::rollBack();
 
-            // Répondre avec une erreur
-            return response()->json([
-                'status' => 'error',
+            return [
+                'status' => 500,
+                'data' => null,
                 'message' => 'Erreur lors de la création de l\'utilisateur : ' . $e->getMessage()
-            ], 500);
+            ];
         }
+    }
+
+    private function getRoleIdByName($roleName)
+    {
+        $role = \App\Models\Role::where('name', $roleName)->first();
+        if (!$role) {
+            throw new Exception('Rôle ' . $roleName . ' non trouvé');
+        }
+        return $role->id;
     }
 
 

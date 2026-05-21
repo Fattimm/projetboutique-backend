@@ -6,36 +6,33 @@ use App\Models\Article;
 
 class ArticlePolicy
 {
-    // Autorisation pour créer un article (BOUTIQUIER uniquement)
     public function store(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
-    // Autorisation pour lister les articles (BOUTIQUIER uniquement)
     public function index(User $user)
     {
-            \Log::info('role user: ' . $user->role . ' role_id: ' . $user->role_id);
-
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
-    // Autorisation pour mettre à jour un article (BOUTIQUIER uniquement)
     public function updateStock(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function updateMultipleStocks(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
+
     public function showById(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
+
     public function showByLibelle(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 }

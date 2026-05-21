@@ -53,7 +53,8 @@ class ClientServiceImpl implements ClientService
 
             if ($request->has('user')) {
                 $userData = $request->input('user');
-
+                $roleName = $userData['role'] ?? 'CLIENT';
+                $roleId = $this->getRoleIdByName($roleName);
 
                 $user = User::create([
                     'nom' => $userData['nom'],
@@ -61,7 +62,7 @@ class ClientServiceImpl implements ClientService
                     'login' => $userData['login'],
                     'email' => $userData['email'],
                     'password' => bcrypt($userData['password']),
-                    'role' => $userData['role'] ?? 'CLIENT',
+                    'role_id' => $roleId,
                 ]);
 
 
@@ -345,5 +346,13 @@ class ClientServiceImpl implements ClientService
         }
     }
 
-    
+    private function getRoleIdByName($roleName)
+    {
+        $role = \App\Models\Role::where('name', $roleName)->first();
+        if (!$role) {
+            throw new \Exception('Rôle ' . $roleName . ' non trouvé');
+        }
+        return $role->id;
+    }
+
 }

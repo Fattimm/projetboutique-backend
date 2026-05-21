@@ -7,29 +7,15 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  array  ...$roles
-     * @return mixed
-     */
-   
-     public function handle($request, Closure $next)
-     {
-         $user = Auth::user();
- 
-         if ($user && $user->role === 'ADMIN') {
-             return $next($request);
-         }
+    public function handle($request, Closure $next)
+    {
+        $user = Auth::user();
 
-         if ($user && $user->role === 'BOUTIQUIER') {
-            dd($user);
-             return $next($request);
-         }
- 
-         return response()->json(['message' => 'Accès interdit'], 403);
-     }
-    
+        if ($user && ($user->hasRole('ADMIN') || $user->hasRole('BOUTIQUIER'))) {
+            return $next($request);
+        }
+
+        return response()->json(['message' => 'Accès interdit'], 403);
+    }
+
 }

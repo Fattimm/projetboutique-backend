@@ -9,63 +9,57 @@ class DettePolicy
 {
     public function store(User $user)
     {
-        // Seul un boutiquier peut créer une dette
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function index(User $user)
     {
-        // Un admin ou un boutiquier peut voir les dettes
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function show(User $user)
     {
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function listArticles(User $user)
     {
-        // Seul un boutiquier peut ajouter un paiement à une dette
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function listPaiements(User $user)
     {
-        // Un admin ou un boutiquier peut voir les paiements des dettes
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function addPaiement(User $user)
     {
-        // Un admin ou un boutiquier peut voir les paiements des dettes
-        return $user->role === 'BOUTIQUIER';
+        return $user->hasRole('BOUTIQUIER');
     }
 
     public function archiver(User $user)
     {
-        return $user->role === 'ADMIN';
+        return $user->hasRole('ADMIN');
     }
 
     public function afficherDettesArchivees(User $user)
     {
-        return $user->role === 'ADMIN';
+        return $user->hasRole('ADMIN');
     }
 
     public function restaurer(User $user)
     {
-        return $user->role === 'ADMIN';
+        return $user->hasRole('ADMIN');
     }
 
     public function restaurerParClient(User $user)
     {
-        return $user->role === 'ADMIN';
+        return $user->hasRole('ADMIN');
     }
 
     public function restaurerParDate(User $user)
     {
-        return $user->role === 'ADMIN';
+        return $user->hasRole('ADMIN');
     }
-
 
 }

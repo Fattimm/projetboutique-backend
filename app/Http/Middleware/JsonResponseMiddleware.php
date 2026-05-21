@@ -21,9 +21,14 @@ class JsonResponseMiddleware
 
             $statusCode = $response->getStatusCode();
             $originalContent = $response->getContent();
+            $data = json_decode($originalContent, true);
+
+            // Vérifier si la réponse est déjà formatée (contient data, status, message)
+            if (is_array($data) && isset($data['status'], $data['data'], $data['message'])) {
+                return $response;
+            }
 
             $status = $statusCode < 400 ? StateEnum::SUCCESS : StateEnum::ECHEC;
-            $data = json_decode($originalContent, true);
 
             $formattedResponse = [
                 'data' => $data,

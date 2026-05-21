@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Models\Client;
 use App\Models\Article;
+use App\Models\Dette;
 use App\Policies\PostPolicy;
 use App\Policies\UserPolicy;
 use OpenApi\Attributes\Post;
 use App\Policies\ClientPolicy;
+use App\Policies\DettePolicy;
 use Laravel\Passport\Passport;
 // use Workbench\App\Models\User;
 use App\Models\User;

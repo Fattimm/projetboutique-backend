@@ -75,11 +75,76 @@ class FirebaseArchivageService implements ArchivageService
 
     public function restaurerDettesParDate($date)
     {
-        throw new \Exception('Non implémenté');
+        try {
+            $detteData = $this->firebase->getReference('archive_dette')->getValue();
+
+            if (!$detteData) {
+                return [
+                    'status' => 404,
+                    'message' => 'Aucune dette archivée trouvée'
+                ];
+            }
+
+            $restoredCount = 0;
+            $targetDate = \Carbon\Carbon::parse($date)->startOfDay();
+
+            foreach ($detteData as $detteId => $dette) {
+                $archivedDate = isset($dette['date_archivage'])
+                    ? \Carbon\Carbon::parse($dette['date_archivage'])->startOfDay()
+                    : null;
+
+                if ($archivedDate && $archivedDate->isSameDay($targetDate)) {
+                    Dette::create((array)$dette);
+                    $this->firebase->getReference('archive_dette/' . $detteId)->remove();
+                    $restoredCount++;
+                }
+            }
+
+            return [
+                'status' => 200,
+                'message' => "Dettes restaurées avec succès (nombre: {$restoredCount})"
+            ];
+        } catch (Exception $e) {
+            Log::error("Erreur lors de la restauration des dettes par date: " . $e->getMessage());
+            return [
+                'status' => 500,
+                'message' => "Erreur lors de la restauration : " . $e->getMessage()
+            ];
+        }
     }
 
     public function restaurerDettesParClient($clientId)
     {
-        throw new \Exception('Non implémenté');
+        try {
+            $detteData = $this->firebase->getReference('archive_dette')->getValue();
+
+            if (!$detteData) {
+                return [
+                    'status' => 404,
+                    'message' => 'Aucune dette archivée trouvée'
+                ];
+            }
+
+            $restoredCount = 0;
+
+            foreach ($detteData as $detteId => $dette) {
+                if (isset($dette['client_id']) && $dette['client_id'] == $clientId) {
+                    Dette::create((array)$dette);
+                    $this->firebase->getReference('archive_dette/' . $detteId)->remove();
+                    $restoredCount++;
+                }
+            }
+
+            return [
+                'status' => 200,
+                'message' => "Dettes restaurées avec succès (nombre: {$restoredCount})"
+            ];
+        } catch (Exception $e) {
+            Log::error("Erreur lors de la restauration des dettes par client: " . $e->getMessage());
+            return [
+                'status' => 500,
+                'message' => "Erreur lors de la restauration : " . $e->getMessage()
+            ];
+        }
     }
 }

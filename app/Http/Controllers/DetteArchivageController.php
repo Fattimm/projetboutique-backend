@@ -45,10 +45,9 @@ class DetteArchivageController extends Controller
     }
 
     // Restaurer les dettes archivées à une date donnée
-    public function restaurerParDate(Request $request)
+    public function restaurerParDate($date)
     {
         $this->authorize('restaurerParDate', Dette::class);
-        $date = $request->input('date');
         return $this->archivageService->restaurerDettesParDate($date);
     }
     
